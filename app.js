@@ -2,34 +2,22 @@ const batteryLevel = require("battery-level");
 const fs = require('fs')
 const inquirer = require('inquirer');
 
-let fileName
-let a
 const levels = [];
+let fileName;
+let a
 
-async function getFileName() {
+const getFileName = async () => {
     const answer = await inquirer.prompt([{
         type: 'input',
-        name: 'fileName',
+        name: 'userFileName',
         message: 'enter File Name :',
     }])
-    console.log(answer.fileName + '.txt');
-    fileName = answer.fileName + '.txt'
-
-    setInterval(() => {
-        batteryLevel()
-            .then((level) => my(level))
-            .catch((err) => console.log('err interval:', err));
-    }, 1000);
-
+    // const userFileName = answer.fileName + '.txt'
+    // return userFileName
+    return answer.userFileName + '.txt'
 }
-getFileName()
 
-
-
-
-
-
-function my(level) {
+function checkBatteryLevel(level) {
     if (!levels.includes(level)) {
         levels.push(level)
         const data = parseInt(level * 100) + "% " + Date()
@@ -41,3 +29,32 @@ function my(level) {
         console.log('data : ', data);
     }
 }
+
+async function logBattery() {
+    fileName = await getFileName() 
+    setInterval(() => {
+        batteryLevel()
+            .then((level) => checkBatteryLevel(level))
+            .catch((err) => console.log('err interval:', err));
+    }, 1000);
+}
+
+
+//---------OK--------------------------
+// async function start(){
+//         fileName = await getFileName()
+//     console.log('++++++',fileName);
+//     logBattery()
+// }
+
+// start()
+
+//---------OK--------------------------
+// getFileName().then(FN => {
+    //     fileName = FN
+    //     console.log('++++++', FN);
+    //     logBattery()
+    // }).catch( err => console.log(err) )
+    
+//---------OK--------------------------
+logBattery()
